@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCE Speaking Test Random Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f6f7fc 0%, #e3e9f4 100%);
+            min-height: 100vh;
+            padding: 40px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 1em;
+            opacity: 0.85;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .part-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .part-btn {
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            border: 2px solid #4e73df;
+            background: white;
+            color: #4e73df;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .part-btn:hover {
+            background: #4e73df;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+        }
+        
+        .part-btn.active {
+            background: #4e73df;
+            color: white;
+        }
+        
+        .random-btn {
+            display: block;
+            width: 200px;
+            margin: 0 auto 30px;
+            padding: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .random-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .result {
+            background: #f8f9fc;
+            border-radius: 8px;
+            padding: 25px;
+            min-height: 200px;
+            display: none;
+            border: 1px solid #e3e9f4;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result h2 {
+            color: #4e73df;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            border-bottom: 1px solid #e3e9f4;
+            padding-bottom: 10px;
+        }
+        
+        .prompt {
+            font-weight: 600;
+            margin: 15px 0 10px 0;
+            color: #224abe;
+        }
+        
+        .question {
+            margin: 8px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+        
+        .image-item p {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .points-list {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .points-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .points-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .points-list li:last-child {
+            border-bottom: none;
+        }
+
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 2px solid #e3e9f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>FCE Speaking Test Random Generator</h1>
+            <p>Chọn phần thi và nhấn Random để tạo đề thi ngẫu nhiên. Hỗ trợ hình ảnh cho Part 2 và Part 3.</p>
+        </div>
+        
+        <div class="content">
+            <div class="part-selector">
+                <button class="part-btn active" data-part="1">Part 1</button>
+                <button class="part-btn" data-part="2">Part 2</button>
+                <button class="part-btn" data-part="3">Part 3</button>
+                <button class="part-btn" data-part="4">Part 4</button>
+            </div>
+            
+            <button class="random-btn">Random</button>
+            
+            <div class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // ✅ FIXED: Khai báo dữ liệu TRƯỚC khi sử dụng
+        const part1Data = [
+            {
+                categories: [
+                    {
+                        name: "Family and friends",
+                        questions: [
+                            "Who are you most like in your family? (In what ways are you similar?)",
+                            "Do you go on holiday with your family? (Why? / Why not?)",
+                            "Have you done anything interesting with your friends recently? (What did you do with them?)",
+                            "Tell me about a really good friend of yours. (Do you share the same interests?)",
+                            "Do you prefer to spend time with your family or with your friends at the weekend? (Why?)",
+                            "Are there a lot of interesting things to do in your town at the weekend? (What do you do there?)",
+                            "Do you often have to do homework at the weekend? (How do you feel about that?)",
+                            "Can you tell us something about what you're planning to do next weekend?"
+                        ]
+                    },
+                    {
+                        name: "Interests and habits",
+                        questions: [
+                            "Is there a sport or hobby you enjoy doing? (What do you do?) (Why do you like it?)",
+                            "If you could learn a new skill, what would you choose to do? (Why?)",
+                            "Do you like reading? (What do you read?) (Why do you like it?)",
+                            "Have you seen a good film recently? (Tell me about it.)",
+                            "Do you like to be busy every day? (Why? / Why not?)",
+                            "What sport do you enjoy playing? (Why do you like doing that?)",
+                            "Do you enjoy watching TV? (What's your favourite programme?) (Why do you like it?)",
+                            "Do you ever meet your friends in the evenings after school? (What do you do together?)",
+                            "Do you prefer individual sports or team sports? (Why?)",
+                            "Which is the most popular sport in your country? (Why do you think it's popular?)",
+                            "How much time do you spend listening to music? (What kind of music do you like?)",
+                            "Do you enjoy playing computer games in your free time? (Why? / Why not?)"
+                        ]
+                    },
+                    {
+                        name: "Future plans",
+                        questions: [
+                            "Have you got any plans for this weekend? (What are you going to do?)",
+                            "Are you going to go on holiday this year? (Where are you going to go?)",
+                            "Is there anything you'd like to study in the future? (Why?)",
+                            "Which country would you most like to visit in the future? (Do you think you'll go there one day?) (Why? / Why not?)",
+                            "What are you going to do after school today? (Why?)",
+                            "What would you like to do for your next birthday? (Why?)",
+                            "Is there something you'd like to learn in the future? (What would you like to learn?) (Why?)",
+                            "What would you like to do when you leave school? (Why?)"
+                        ]
+                    },
+                    {
+                        name: "Travel",
+                        questions: [
+                            "Do you enjoy long journeys? (What do you do to pass the time?)",
+                            "Do you have to travel far every day? (Where do you have to go?)",
+                            "Do you prefer to travel by car or public transport? (Why?)",
+                            "Tell us about an interesting place you've travelled to."
+                        ]
+                    },
+                    {
+                        name: "Study or work",
+                        questions: [
+                            "What good memories do you have of school?",
+                            "Is there anything you would like to study in the future? (Why?)",
+                            "Have you ever had a part-time job? (What do/did you do? Do/Did you enjoy it?)",
+                            "Would you prefer to work for a big or small company? (Why?)"
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        const part2Data = [
+  // Test 1
+  {
+    test: 1,
+    candidateA: {
+      topic: "Getting information",
+      prompt: "Compare the photographs, and say why you think the people are getting information about these things.",
+      images: [
+        "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=500",
+        "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=500"
+      ],
+      followUp: "Do you enjoy travelling by plane? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Walking",
+      prompt: "Compare the photographs, and say why you think the people have decided to go walking in these places.",
+      images: [
+        "https://images.unsplash.com/photo-1551632811-561732d1e306?w=500",
+        "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=500"
+      ],
+      followUp: "Which of these places would you prefer to walk in? (Why?)"
+    }
+  },
+  // Test 2
+  {
+    test: 2,
+    candidateA: {
+      topic: "Holidays in different places",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about spending their holidays in these ways.",
+      images: [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500",
+        "https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Choosing things",
+      prompt: "Compare the photographs, and say what the people might find difficult about choosing things in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500",
+        "https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?w=500"
+      ],
+      followUp: "Do you often go shopping in supermarkets? (Why? / Why not?)"
+    }
+  },
+  // Test 3
+  {
+    test: 3,
+    candidateA: {
+      topic: "People using phones",
+      prompt: "Compare the photographs, and say why you think the people have decided to use their phones in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500",
+        "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500"
+      ],
+      followUp: "Do you often use a mobile phone? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Winter activities",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about doing these winter activities.",
+      images: [
+        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=500",
+        "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why? / Why not?)"
+    }
+  },
+  // Test 4
+  {
+    test: 4,
+    candidateA: {
+      topic: "Beautiful places",
+      prompt: "Compare the photographs, and say what the people are enjoying about spending time in these beautiful places.",
+      images: [
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500",
+        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500"
+      ],
+      followUp: "Do you enjoy spending time in the countryside? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Listening to music",
+      prompt: "Compare the photographs, and say why you think the people are listening to music in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=500",
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500"
+      ],
+      followUp: "Would you like to go to a classical concert? (Why? / Why not?)"
+    }
+  },
+  // Test 5
+  {
+    test: 5,
+    candidateA: {
+      topic: "Doing things together",
+      prompt: "Compare the photographs, and say why you think the friends have decided to do these things together.",
+      images: [
+        "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500",
+        "https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do with your friends? (Why?)"
+    },
+    candidateB: {
+      topic: "Listening carefully in lessons",
+      prompt: "Compare the photographs, and say why you think it might be important for the students to listen carefully in these lessons.",
+      images: [
+        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=500"
+      ],
+      followUp: "Which of these lessons would you prefer to have? (Why?)"
+    }
+  },
+  // Test 6
+  {
+    test: 6,
+    candidateA: {
+      topic: "Eating in different places",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about eating in these places.",
+      images: [
+        "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500",
+        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500"
+      ],
+      followUp: "Do you like having meals with your family? (Why?)"
+    },
+    candidateB: {
+      topic: "New activities",
+      prompt: "Compare the photographs, and say what you think the people might find difficult about these new activities.",
+      images: [
+        "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500",
+        "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500"
+      ],
+      followUp: "Which of these activities would you like to try? (Why?)"
+    }
+  },
+  // Test 7
+  {
+    test: 7,
+    candidateA: {
+      topic: "Watching friends",
+      prompt: "Compare the photographs, and say why you think the people are watching their friends in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500",
+        "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500"
+      ],
+      followUp: "Would you like to do either of these things? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Summer afternoon",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about doing these things on a summer afternoon.",
+      images: [
+        "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=500",
+        "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do on a summer afternoon? (Why?)"
+    }
+  },
+  // Test 8
+  {
+    test: 8,
+    candidateA: {
+      topic: "Competitions",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about taking part in these competitions.",
+      images: [
+        "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=500",
+        "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500"
+      ],
+      followUp: "Would you like to take part in either of these competitions? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Practising",
+      prompt: "Compare the photographs, and say what you think the people might find difficult about practising these things.",
+      images: [
+        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500",
+        "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why?)"
+    }
+  },
+  // Test 9
+  {
+    test: 9,
+    candidateA: {
+      topic: "Guided tours",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about these guided tours.",
+      images: [
+        "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=500",
+        "https://images.unsplash.com/photo-1503332132010-d1b77a049ddd?w=500"
+      ],
+      followUp: "Would you like to visit either of these places? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Doing exercise",
+      prompt: "Compare the photographs, and say why the people have decided to exercise in these ways.",
+      images: [
+        "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500",
+        "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why?)"
+    }
+  },
+  // Test 10
+  {
+    test: 10,
+    candidateA: {
+      topic: "Giving advice",
+      prompt: "Compare the photographs, and say why it might be important to give advice in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500",
+        "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=500"
+      ],
+      followUp: "Do you like listening to advice? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Looking at beautiful things",
+      prompt: "Compare the photographs, and say why you think these people are looking at these beautiful things.",
+      images: [
+        "https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=500",
+        "https://images.unsplash.com/photo-1545898679-1d7a7701548f?w=500"
+      ],
+      followUp: "Do you enjoy going to museums and galleries? (Why? / Why not?)"
+    }
+  },
+  // Test 11
+  {
+    test: 11,
+    candidateA: {
+      topic: "Quiet places",
+      prompt: "Compare the photographs, and say why you think the people have decided to spend time in these quiet places.",
+      images: [
+        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=500",
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500"
+      ],
+      followUp: "Which of these places would you prefer to spend time in? (Why?)"
+    },
+    candidateB: {
+      topic: "At night",
+      prompt: "Compare the photographs, and say what you think the people might be enjoying about doing these things at night.",
+      images: [
+        "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=500",
+        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why?)"
+    }
+  },
+  // Test 12
+  {
+    test: 12,
+    candidateA: {
+      topic: "By the river",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about spending time by the different rivers.",
+      images: [
+        "https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=500",
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why?)"
+    },
+    candidateB: {
+      topic: "Attending big events",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about being at these events.",
+      images: [
+        "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=500",
+        "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=500"
+      ],
+      followUp: "Which of these events would you prefer to attend? (Why?)"
+    }
+  },
+  // Test 13
+  {
+    test: 13,
+    candidateA: {
+      topic: "Football games",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about these football games.",
+      images: [
+        "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=500",
+        "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=500"
+      ],
+      followUp: "Do you enjoy watching football games? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Travelling",
+      prompt: "Compare the photographs, and say what might be good or bad for the people about travelling in these ways.",
+      images: [
+        "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=500",
+        "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=500"
+      ],
+      followUp: "Do you prefer travelling by car or train? (Why?)"
+    }
+  },
+  // Test 14
+  {
+    test: 14,
+    candidateA: {
+      topic: "Taking photographs",
+      prompt: "Compare the photographs, and say why you think the people are taking photographs in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=500",
+        "https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=500"
+      ],
+      followUp: "Do you like taking photographs when you go on holiday? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Different jobs",
+      prompt: "Compare the photographs, and say what might be difficult for the people about doing these jobs.",
+      images: [
+        "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=500",
+        "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500"
+      ],
+      followUp: "Which of these jobs would you prefer to do? (Why?)"
+    }
+  },
+  // Test 15
+  {
+    test: 15,
+    candidateA: {
+      topic: "In the evening",
+      prompt: "Compare the photographs, and say what the people are enjoying about doing these things in the evening.",
+      images: [
+        "https://images.unsplash.com/photo-1522158637959-30385a09e0da?w=500",
+        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do in the evening? (Why?)"
+    },
+    candidateB: {
+      topic: "Family time",
+      prompt: "Compare the photographs, and say why the families have decided to do these things together in their free time.",
+      images: [
+        "https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=500",
+        "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do with your family? (Why?)"
+    }
+  },
+  // Test 16
+  {
+    test: 16,
+    candidateA: {
+      topic: "In the city",
+      prompt: "Compare the photographs, and say why the people have chosen to spend time in these different places in a city.",
+      images: [
+        "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=500",
+        "https://images.unsplash.com/photo-1533928298208-27ff66555d8d?w=500"
+      ],
+      followUp: "Do you enjoy spending time in a city? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "A special day",
+      prompt: "Compare the photographs, and say what the people might enjoy about their special day.",
+      images: [
+        "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=500",
+        "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500"
+      ],
+      followUp: "Do you enjoy celebrating with friends? (Why? / Why not?)"
+    }
+  },
+  // Test 17
+  {
+    test: 17,
+    candidateA: {
+      topic: "In the mountains",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about spending time in the mountains.",
+      images: [
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500",
+        "https://images.unsplash.com/photo-1551632811-561732d1e306?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Shopping in different places",
+      prompt: "Compare the photographs, and say why the people have decided to go shopping in these places.",
+      images: [
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500",
+        "https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why? / Why not?)"
+    }
+  },
+  // Test 18
+  {
+    test: 18,
+    candidateA: {
+      topic: "Trying to win",
+      prompt: "Compare the photographs, and say what you think might be difficult about trying to win in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500",
+        "https://images.unsplash.com/photo-1534158914592-062992fbe900?w=500"
+      ],
+      followUp: "Which of these things would you prefer to do? (Why?)"
+    },
+    candidateB: {
+      topic: "Learning new things",
+      prompt: "Compare the photographs, and say why you think the people are learning to do these things.",
+      images: [
+        "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500",
+        "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500"
+      ],
+      followUp: "Would you like to learn how to cook? (Why?)"
+    }
+  },
+  // Test 19
+  {
+    test: 19,
+    candidateA: {
+      topic: "Listening to music",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about listening to music in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=500",
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500"
+      ],
+      followUp: "Do you ever go to concerts? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Feeling happy",
+      prompt: "Compare the photographs, and say why you think the people are feeling happy.",
+      images: [
+        "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500",
+        "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=500"
+      ],
+      followUp: "Do you enjoy going to birthday parties? (Why?)"
+    }
+  },
+  // Test 20
+  {
+    test: 20,
+    candidateA: {
+      topic: "Eating together",
+      prompt: "Compare the photographs, and say why the people have decided to eat together in these places.",
+      images: [
+        "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500",
+        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500"
+      ],
+      followUp: "Do you often eat out with friends? (Why? / Why not?)"
+    },
+    candidateB: {
+      topic: "Working hard",
+      prompt: "Compare the photographs, and say what you think they might find difficult about working hard in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=500",
+        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=500"
+      ],
+      followUp: "Do you ever go to a library to work? (Why? / Why not?)"
+    }
+  },
+  // Test 21
+  {
+    test: 21,
+    candidateA: {
+      topic: "After school clubs",
+      prompt: "Compare the photographs, and say what you think the people are enjoying about doing these activities in after school clubs.",
+      images: [
+        "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500",
+        "https://images.unsplash.com/photo-1523301343968-6a6ebf63c672?w=500"
+      ],
+      followUp: "Which of these activities would you prefer to do? (Why?)"
+    },
+    candidateB: {
+      topic: "Taking photographs",
+      prompt: "Compare the photographs, and say why you think the people have decided to take photographs in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=500",
+        "https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=500"
+      ],
+      followUp: "Do you enjoy taking photographs? (Why?)"
+    }
+  },
+  // Test 22
+  {
+    test: 22,
+    candidateA: {
+      topic: "Listening carefully",
+      prompt: "Compare the photographs, and say why you think the people are listening carefully in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500",
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500"
+      ],
+      followUp: "Do you always listen carefully to your teachers? (Why?)"
+    },
+    candidateB: {
+      topic: "Family holidays",
+      prompt: "Compare the photographs, and say what you think the families are enjoying about spending their holidays in these places.",
+      images: [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500",
+        "https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=500"
+      ],
+      followUp: "Do you enjoy spending time by the sea? (Why?)"
+    }
+  },
+  // Test 23
+  {
+    test: 23,
+    candidateA: {
+      topic: "Working together",
+      prompt: "Compare the photographs, and say why you think the people are working together in these situations.",
+      images: [
+        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500",
+        "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500"
+      ],
+      followUp: "Do you often work together with your friends? (Why?)"
+    },
+    candidateB: {
+      topic: "Learning difficult things",
+      prompt: "Compare the photographs, and say what you think is difficult for the people about learning these things.",
+      images: [
+        "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500",
+        "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=500"
+      ],
+      followUp: "Which of these things would you like to learn to do? (Why?)"
+    }
+  },
+  // Test 24
+  {
+    test: 24,
+    candidateA: {
+      topic: "Studying science",
+      prompt: "Compare the photographs, and say what you think the advantages are of studying science in these ways.",
+      images: [
+        "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=500",
+        "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500"
+      ],
+      followUp: "Do you enjoy studying science? (Why?)"
+    },
+    candidateB: {
+      topic: "Spending time alone",
+      prompt: "Compare the photographs, and say why you think these people have decided to spend time on their own.",
+      images: [
+        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=500",
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500"
+      ],
+      followUp: "Do you like spending time on your own? (Why?)"
+    }
+  }
+];
+
+
+       const part3Data = [
+  {
+    test: 1,
+    topic: "The best way to buy",
+    prompt: "whether it's better to buy things in shops or online",
+    decision: "which of these things is most important to think about when you're buying something expensive",
+    points: [
+      "the time it takes",
+      "getting help",
+      "amount of choice",
+      "security",
+      "what you're buying"
+    ]
+  },
+  {
+    test: 2,
+    topic: "Television",
+    prompt: "whether you think television has a good or a bad influence on young people's lives",
+    decision: "what is the best thing about television",
+    points: [
+      "time with family",
+      "talking about programmes with friends",
+      "other leisure activities",
+      "advertisements",
+      "educational programmes"
+    ]
+  },
+  {
+    test: 3,
+    topic: "Improving life",
+    prompt: "whether these are good ways to improve life for people living in cities",
+    decision: "which of these things would have the greatest long-term benefit for people living in cities",
+    points: [
+      "build new houses and flats",
+      "increase number of parks",
+      "stop cars entering city centres",
+      "open modern shopping centres",
+      "provide libraries and museums"
+    ]
+  },
+  {
+    test: 4,
+    topic: "Important things in life",
+    prompt: "why people think these things are important in their lives",
+    decision: "which two things become more important as people get older",
+    points: [
+      "health and exercise",
+      "education",
+      "a good job",
+      "money",
+      "close friends"
+    ]
+  },
+  {
+    test: 5,
+    topic: "Keeping up to date",
+    prompt: "which two things you think it's most important to keep up to date with",
+    decision: "what you think is the biggest advantage of keeping up to date with all the changes in the world",
+    points: [
+      "technology",
+      "music",
+      "fashion",
+      "education",
+      "the news"
+    ]
+  },
+  {
+    test: 6,
+    topic: "Boredom",
+    prompt: "why people should change the way they spend their free time",
+    decision: "which is the most important reason for changing the way we spend our free time",
+    points: [
+      "using the internet",
+      "having new experiences",
+      "meeting friends",
+      "getting more exercise",
+      "doing less work",
+      "spending more time outside"
+    ]
+  },
+  {
+    test: 7,
+    topic: "Other cultures",
+    prompt: "whether it's important to learn about other cultures and their customs",
+    decision: "which is the most important reason for learning about other cultures",
+    points: [
+      "travelling to other countries",
+      "speaking other languages",
+      "making new friends",
+      "work opportunities",
+      "educating ourselves"
+    ]
+  },
+  {
+    test: 8,
+    topic: "The influence of friends",
+    prompt: "whether you think people are too easily influenced by their friends",
+    decision: "what the best reason is for not being too easily influenced by your friends",
+    points: [
+      "being part of a group",
+      "wanting to be popular",
+      "importance of thinking for yourself",
+      "type of person you are",
+      "importance of listening to family"
+    ]
+  },
+  {
+    test: 9,
+    topic: "Reading books",
+    prompt: "whether everyone should spend more of their free time reading books",
+    decision: "what you think is the best reason for people to spend more of their free time reading books",
+    points: [
+      "learning interesting new things",
+      "having too many other things to do",
+      "improving the ability to write",
+      "enjoying imaginative stories",
+      "finding things to read online instead"
+    ]
+  },
+  {
+    test: 10,
+    topic: "Independent learning",
+    prompt: "whether it's a good idea to try and learn some things without a teacher",
+    decision: "Is it a good idea to try and learn something without a teacher?",
+    points: [
+      "being independent",
+      "getting help from an expert",
+      "being part of a class",
+      "learning quickly",
+      "getting help online"
+    ]
+  },
+  {
+    test: 11,
+    topic: "University",
+    prompt: "whether students should go on to further education after they leave school",
+    decision: "Should students go on to further education after they leave school?",
+    points: [
+      "cost of going",
+      "earning more money",
+      "learning more about the world",
+      "getting a job after leaving school",
+      "having a good career later"
+    ]
+  },
+  {
+    test: 12,
+    topic: "Holiday at home",
+    prompt: "whether people should have holidays in their own country instead of travelling to other countries",
+    decision: "Should people have holidays in their own country instead of travelling to other countries?",
+    points: [
+      "effect on the environment",
+      "time spent travelling to other countries",
+      "cost",
+      "learning about other cultures",
+      "having language problems"
+    ]
+  },
+  {
+    test: 13,
+    topic: "Summer holidays away from home",
+    prompt: "whether teenagers should spend their summer holidays away from home, doing activities with other young people",
+    decision: "what the best reason is for spending summer holidays away from home",
+    points: [
+      "having new experiences",
+      "learning to be independent",
+      "not being with family",
+      "missing friends",
+      "meeting new people"
+    ]
+  },
+  {
+    test: 14,
+    topic: "Helping with homework",
+    prompt: "whether you think parents should help their children with their homework",
+    decision: "what the best reason is for parents not to help their children with their homework",
+    points: [
+      "doing well at school",
+      "learning to be independent",
+      "checking children's progress",
+      "getting work done quickly",
+      "making students lazy"
+    ]
+  },
+  {
+    test: 15,
+    topic: "Talent shows",
+    prompt: "whether it's a good idea for teenagers to take part in talent shows and compete with other young people",
+    decision: "what the best reason is for teenagers not taking part in talent shows",
+    points: [
+      "becoming confident",
+      "feeling pressure to succeed",
+      "being disappointed",
+      "having fun",
+      "wanting to be famous"
+    ]
+  },
+  {
+    test: 16,
+    topic: "Spending pocket money",
+    prompt: "whether children should be allowed to spend their pocket money in any way they want",
+    decision: "the most important reason why children should be allowed to spend their pocket money in any way they want",
+    points: [
+      "choosing the best things to buy",
+      "not having much to spend",
+      "being influenced by friends",
+      "learning to be responsible",
+      "buying things they don't need"
+    ]
+  },
+  {
+    test: 17,
+    topic: "Helping with the housework",
+    prompt: "whether teenagers should help their parents with housework each day",
+    decision: "what the most important reason is for teenagers to help their parents with the housework",
+    points: [
+      "learning practical skills",
+      "needing time for themselves",
+      "doing after school activities",
+      "having time for homework",
+      "being responsible"
+    ]
+  },
+  {
+    test: 18,
+    topic: "Homework",
+    prompt: "whether it's important for students to have homework every day",
+    decision: "which is the most important reason for having homework",
+    points: [
+      "understanding subject very well",
+      "having time for other things",
+      "getting better marks at school",
+      "finding things out for yourself",
+      "need a break from studying"
+    ]
+  },
+  {
+    test: 19,
+    topic: "Spending time with the family",
+    prompt: "whether it's important for young people to spend most of their free time with their families",
+    decision: "which is the best reason for young people to spend free time with their families",
+    points: [
+      "eating together",
+      "going on trips",
+      "wanting to see friends",
+      "doing homework",
+      "getting advice"
+    ]
+  },
+  {
+    test: 20,
+    topic: "Feeling happy at school",
+    prompt: "how important these things are if students want to feel happy at school",
+    decision: "which is the most important thing that makes students feel happy at school",
+    points: [
+      "good friends",
+      "school rules",
+      "friendly teachers",
+      "subjects they enjoy",
+      "after school activities"
+    ]
+  },
+  {
+    test: 21,
+    topic: "Helping children with homework",
+    prompt: "whether you think parents should help children with their homework",
+    decision: "what you think is the best reason for parents to help children with their homework",
+    points: [
+      "learning to solve problems on their own",
+      "children needing good advice",
+      "giving children time for other things",
+      "parents being too busy",
+      "making children lazy"
+    ]
+  },
+  {
+    test: 22,
+    topic: "Depending on the internet",
+    prompt: "whether it's a good idea for people to use the internet to find all the information they need",
+    decision: "what you think is the best reason for people not to depend on the internet for information",
+    points: [
+      "finding information quickly",
+      "finding out-of-date information",
+      "choosing good websites",
+      "learning things from teachers",
+      "reading books instead"
+    ]
+  },
+  {
+    test: 23,
+    topic: "Traditions and customs",
+    prompt: "whether it's important for students to learn about their country's traditions and customs when they're at school",
+    decision: "what you think is the best reason for students to learn about their country's traditions and customs",
+    points: [
+      "keeping traditions alive",
+      "celebrating festivals",
+      "understanding their culture",
+      "having time for other subjects",
+      "needing to think about the future"
+    ]
+  },
+  {
+    test: 24,
+    topic: "Spending time outdoors",
+    prompt: "whether teenagers should spend most of their free time outdoors with their friends",
+    decision: "what you think is the most important reason for teenagers to spend their free time outdoors with their friends",
+    points: [
+      "keeping fit",
+      "staying safe",
+      "learning about the natural world",
+      "being independent",
+      "having to study"
+    ]
+  }
+];
+
+const part4Data = [
+  {
+    test: 1,
+    questions: [
+      "Some people say that students spend too much time at school reading, so they should do something different in their free time. Do you agree? (Why? / Why not?)",
+      "Some people say that we can't learn anything useful from reading novels. Do you agree? (Why? / Why not?)",
+      "Do you think it's important for parents to read to their children? (Why? / Why not?)",
+      "Do you think it's true that if we want to understand something well we should watch a TV documentary rather than read a book? (Why? / Why not?)",
+      "Some people say that we don't need libraries any more. Do you agree? (Why? / Why not?)",
+      "Do you think that in the future people won't read books at all? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 2,
+    questions: [
+      "Do you find it always better to have a teacher when you want to learn things? (Why? / Why not?)",
+      "Some people say that we should keep learning new things all our lives. What do you think?",
+      "Do you think it's true that having a private lesson is better than having a lesson with other students? (Why? / Why not?)",
+      "Do you think that in future everyone will learn everything they need to know from the internet? (Why? / Why not?)",
+      "Some people say that our parents teach us more important things than any teachers. Do you agree? (Why? / Why not?)",
+      "Some people say the only way we really learn things is by trying to do things and making mistakes. (What do you think?)"
+    ]
+  },
+  {
+    test: 3,
+    questions: [
+      "Do a lot of students go on to university in your country? Do you think that's a good thing? (Why? / Why not?)",
+      "Do you think it's a good idea for students to leave home and study in a different city after they finish school? (Why? / Why not?)",
+      "Is it a good idea to study in another country? (Why? / Why not?)",
+      "Some people say that these days you need to have lots of qualifications to be successful. Do you agree? (Why? / Why not?)",
+      "Some people say that further education doesn't prepare people for getting a job. Do you agree? (Why? / Why not?)",
+      "Should students get some work experience while they're still at school or college? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 4,
+    questions: [
+      "Where do people in your country go on their holidays? (Why do they like it there?)",
+      "Some people say that holidays are for having fun, not for learning about other cultures. What do you think?",
+      "Do you think it's best to have one long holiday each year or several short ones? (Why?)",
+      "Do you think it is important to find out a lot of information about the place you are visiting on holiday? (Why? / Why not?)",
+      "Is it a good idea to go on holiday to the same place every year? (Why? / Why not?)",
+      "Do you think it is important to speak the language of the country you are visiting? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 5,
+    questions: [
+      "Have you ever been away from home during the summer holidays? (Where did you go? / What did you do?)",
+      "Is it important for teenagers to spend time away from home? (Why? / Why not?)",
+      "Do you think it's good for teenagers to go on holiday with their families? (Why? / Why not?)",
+      "Some people think that students have too many holidays in the year. What do you think? (Why?)",
+      "Some schools give students the chance to go on trips to other countries during the school year. Do you think this is a good idea? (Why? / Why not?)",
+      "Is it important to do school work during the summer holidays? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 6,
+    questions: [
+      "Some people say students spend too much time doing homework. Do you agree? (Why? / Why not?)",
+      "Is it a good idea for students to do homework together? (Why? / Why not?)",
+      "Should teachers give students homework to do during the school holidays? (Why? / Why not?)",
+      "Some people think students shouldn't do any homework so that they can spend more time with their families. What do you think? (Why?)",
+      "How important is it for families to find time to do things together? (Why?)",
+      "Do you think students in (candidate's country) have enough free time to do what they want? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 7,
+    questions: [
+      "Have you ever taken part in a talent show? (What did you do? / How did you feel about it?)",
+      "Is it better to be quite good at lots of different things or very good at one thing? (Why?)",
+      "Some people say that children should never compete with each other. What do you think? (Why?)",
+      "Some people say that children spend too much time learning new skills and should spend more time just playing together. What do you think? (Why?)",
+      "Do you think it's true that anyone can be good at anything if they practise enough? (Why? / Why not?)",
+      "Some people say you only really get better at anything if you have to compete with other people. What do you think? (Why?)"
+    ]
+  },
+  {
+    test: 8,
+    questions: [
+      "Did you get pocket money when you were a child? (Did you prefer to save it or spend it? / Why?)",
+      "Some people think children shouldn't have any pocket money at all. What do you think? (Why?)",
+      "Some parents ask children to do jobs around the house to earn pocket money. Is this a good idea? (Why? / Why not?)",
+      "Some people say that there should be no advertising on TV for children's toys and games because it makes children want to have too many things. What do you think? (Why?)",
+      "Is it important for young people to try to save money? (Why? / Why not?)",
+      "Do you think it's good for young people to get a part-time job while they're still at school so they can earn their own money? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 9,
+    questions: [
+      "Some people say that we spend too much time checking for updates on social networking websites. Do you agree? (Why? / Why not?)",
+      "Do you think the best way to keep up to date with changes in the world is to watch television? (Why? / Why not?)",
+      "Some people say the world is changing so fast that we can't keep up to date with everything. Do you agree? (Why? / Why not?)",
+      "How important is it for people to have change in their lives?",
+      "Some people don't like it when things change. Why do you think that is?",
+      "Do you think people these days are only interested in new things and ignore history and tradition? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 10,
+    questions: [
+      "Should schools and colleges organise free time activities for students at weekends? (Why? / Why not?)",
+      "Do you think it's true that you will always enjoy yourself if you're with other people? (Why? / Why not?)",
+      "Some people say that it's important to entertain yourself rather than expect other people to do it all the time. What do you think?",
+      "Is it a good idea to have a lot of different interests or just one or two? (Why? / Why not?)",
+      "Do you think it's important to be busy all the time? (Why? / Why not?)",
+      "Some people say we don't have enough free time these days. What do you think?"
+    ]
+  },
+  {
+    test: 11,
+    questions: [
+      "Are you interested in the cultures of other countries, for example their music or food? (Why? / Why not?)",
+      "Can we learn a lot about the culture of a country when we're on holiday there? (Why? / Why not?)",
+      "Should students spend more time learning about other cultures when they are at school? (Why? / Why not?)",
+      "Some students have the opportunity to study in another country. Is this a good thing to do? (Why? / Why not?)",
+      "Do you think it's true that the internet has helped us understand people in other countries? (Why? / Why not?)",
+      "Some people say that these days that there aren't many big cultural differences between countries. Do you agree? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 12,
+    questions: [
+      "Some people say that we always want to have the same things as our friends. What do you think?",
+      "Do you think we can be friends with people who have very different ideas and opinions from us?",
+      "Do you think it's better to have only one or two close friends or have a big group of friends? ...... (Why?)",
+      "How important do you think it is for parents to like their children's friends?",
+      "Some people think that the media influence us much more than our friends do. Do you agree? ...... (Why? / Why not?)",
+      "Are we too easily influenced by people we have never met, such as sports stars or other famous people? ...... (Why do you say that?)"
+    ]
+  },
+  {
+    test: 13,
+    questions: [
+      "Some people say there will be no need for shops in the future because we'll buy everything online.",
+      "Do you think it's true that we buy a lot of things we don't really need these days? (Why? / Why not?)",
+      "Do you think that out of town shopping centres are a good idea?",
+      "Is it better to go shopping with friends or alone?",
+      "Some people say that shopping is a leisure activity nowadays. What do you think?",
+      "Do you think that advertising encourages people to spend too much money? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 14,
+    questions: [
+      "Is watching TV the best way for people to spend their free time? (Why? / Why not?)",
+      "What kind of TV programmes do you like best? (Why?)",
+      "Some people have more than one television in their home. Do you think this is a good idea? (Why / Why not?)",
+      "Do you think children generally watch too much television in (candidate's country)? (Why / Why not?)",
+      "Is television the best way of following the news in the world? (Why? / Why not?)",
+      "Do you think watching TV is a good way to learn a language? (Why / Why not?)"
+    ]
+  },
+  {
+    test: 15,
+    questions: [
+      "What's good about living in cities in (candidate's country)? (Why?)",
+      "Which is the best city for people to visit in (candidate's country)? (Why?)",
+      "If you could choose to visit a city you've never been to, which one would you choose? (Why?)",
+      "Would you prefer to live in a modern city or a city with lots of history? (Why?)",
+      "Are there advantages to living in a small town rather than in a big city?",
+      "Do you think it is better for children to grow up in the city or in the countryside? (Why?)"
+    ]
+  },
+  {
+    test: 16,
+    questions: [
+      "If you could change anything about your life, what would you change? (Why?)",
+      "Many people say life's too busy these days. Why do you think they say this?",
+      "Many people seem to want to become famous nowadays. Why do you think this is?",
+      "Is it important to enjoy a job or do you think it's enough to be paid well? (Why?)",
+      "How important is it to go on holiday every year? (Why? / Why not?)",
+      "Some people say we don't spend enough time talking to each other these days. What do you think?"
+    ]
+  },
+  {
+    test: 17,
+    questions: [
+      "What's the most important thing teenagers can do to help their parents? (Why?)",
+      "Some people say it's better to help because you want to, and not because you have to. Do you agree? (Why? / Why not?)",
+      "Some people say that teenagers shouldn't have to do any work at the weekend but should just have fun. What do you think?",
+      "Should parents decide how teenagers spend their free time? (Why? / Why not?)",
+      "Do you think it's important for teenagers to learn to look after themselves? (Why? / Why not?)",
+      "Some people say that the most important thing for parents to teach their children is how to be kind and helpful. What do you think?"
+    ]
+  },
+  {
+    test: 18,
+    questions: [
+      "Some people say that students should never have to do homework. What do you think?",
+      "Do you think students should have some control over how much homework they're given? (Why? / Why not?)",
+      "Should parents ever help their children with homework? (Why? / Why not?)",
+      "Do you think students learn more if they do homework with their friends? (Why? / Why not?)",
+      "Is it a good idea for students to have homework during their school holidays? (Why? / Why not?)",
+      "Some people say students these days use the internet too much when they're doing their homework. Do you agree? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 19,
+    questions: [
+      "Do you think watching television is a good way for families to spend their time together? (Why? / Why not?)",
+      "Is it difficult for families to find things that everyone wants to do together? (Why?)",
+      "Do you think parents should organise their children's free time for them? (Why? / Why not?)",
+      "Do you think it's true that young people are too busy these days and don't have enough free time? (Why? / Why not?)",
+      "Should young people give up some of their free time to help their parents with housework? (Why? / Why not?)",
+      "Some people say it's good to spend some time alone, without family and friends. What do you think? (Why?)"
+    ]
+  },
+  {
+    test: 20,
+    questions: [
+      "Do you think most students in (candidate's country) feel happy about going to school every day? (Why? / Why not?)",
+      "Do you think it's true that it takes a long time to feel happy when you start a new school? (Why? / Why not?)",
+      "Some people say that students should be allowed to choose what they want to study. What do you think?",
+      "Should schools give students longer breaks during the day? (Why? / Why not?)",
+      "Do you think it's a good idea for schools to organise trips to interesting places during the school day? (Why? / Why not?)",
+      "Should schools give prizes to good students at the end of the year? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 21,
+    questions: [
+      "Do your parents give you a lot of help with your homework? (What do they help with?)",
+      "Some people say that children shouldn't do any homework during the school week. Do you agree? (Why? / Why not?)",
+      "Do you think the school day should be longer so that students don't have to do work at home? (Why? / Why not?)",
+      "Some people say that homework isn't a good thing for children because they stay up too late doing it. What do you think?",
+      "Do you think it would be a good idea for students to do homework online so that the teachers can see what they've done? (Why? / Why not?)",
+      "Do you think it's true that giving children prizes is the best way to encourage them to work harder? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 22,
+    questions: [
+      "Do you and your friends always use the internet for doing your homework? (Why? / Why not?)",
+      "Do you think parents should control how long their children spend online? (Why? / Why not?)",
+      "Some people think we can learn more from watching television than from going online. What do you think?",
+      "Should computers be part of every lesson at school? (Why? / Why not?)",
+      "Sometimes people try to stay offline for a whole day. Do you think doing that's a good idea? (Why? / Why not?)",
+      "A lot of people post pictures and information about what they're doing on the internet. Do you think that's a good thing to do? (Why do you say that?)"
+    ]
+  },
+  {
+    test: 23,
+    questions: [
+      "Is there a custom or tradition in your country that's very popular? (Why do you think it's popular?)",
+      "Do you think it's important to celebrate traditional festivals? (Why? / Why not?)",
+      "Do you think it's true that traditions aren't so important now because countries are becoming more similar? (Why? / Why not?)",
+      "Do you think it is a good idea for schools to organise trips to historic places? (Why? / Why not?)",
+      "Some people say that the best way for children to learn about history is by talking to their grandparents or older people. What do you think?",
+      "Some people say it's more important to study international history and not the history of your own country. Do you agree? (Why? / Why not?)"
+    ]
+  },
+  {
+    test: 24,
+    questions: [
+      "Do you and your friends spend a lot of your time doing outdoor activities? (Why? / Why not?)",
+      "Should students have to do outdoor sports lessons at school? (Why? / Why not?)",
+      "Do you think it's a good idea for families to go on holidays where they spend a lot of time outside, for example camping holidays? (Why? / Why not?)",
+      "Is growing up in the countryside better for children than living in cities? (Why? / Why not?)",
+      "Some people say that it is important for big cities to have good parks. Do you agree? (Why? / Why not?)",
+      "Do you think it's true that if people spent more time outside, they'd care more about protecting the environment? (Why? / Why not?)"
+    ]
+  }
+];
+
+
+
+        // ✅ FIXED: Gán dữ liệu SAU khi đã khai báo
+        const data = {
+            part1: part1Data,
+            part2: part2Data,
+            part3: part3Data,
+            part4: part4Data
+        };
+
+        let currentPart = 1;
+
+        // Event listeners cho nút chọn part
+        const partButtons = document.querySelectorAll('.part-btn');
+        partButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                partButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentPart = parseInt(button.dataset.part);
+                document.querySelector('.result').innerHTML = '';
+                document.querySelector('.result').classList.remove('show');
+            });
+        });
+
+        // ✅ FIXED: Sửa lại logic random cho từng part
+        document.querySelector('.random-btn').addEventListener('click', () => {
+            const resultDiv = document.querySelector('.result');
+            let content = '';
+            
+            if (currentPart === 1) {
+                const test = data.part1[0];
+                const selectedCategories = test.categories.sort(() => 0.5 - Math.random()).slice(0, 3);
+                content = '<h2>Part 1</h2>';
+                selectedCategories.forEach(cat => {
+                    content += `<div class="prompt">${cat.name}</div>`;
+                    const questions = cat.questions.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 1);
+                    questions.forEach(q => {
+                        content += `<div class="question">• ${q}</div>`;
+                    });
+                });
+            } 
+            else if (currentPart === 2) {
+                const test = data.part2[Math.floor(Math.random() * data.part2.length)];
+                content = '<h2>Part 2</h2>';
+                content += '<div class="prompt"><strong>Candidate A:</strong> ' + test.candidateA.prompt + '</div>';
+                content += '<div class="image-grid">';
+                test.candidateA.images.forEach((url, i) => {
+                    content += `<div class="image-item"><img src="${url}" alt="Picture ${i+1}"><p>Picture ${i+1}</p></div>`;
+                });
+                content += '</div>';
+                content += '<div class="question">Follow-up for Candidate B: ' + test.candidateA.followUp + '</div>';
+                content += '<hr>';
+                content += '<div class="prompt"><strong>Candidate B:</strong> ' + test.candidateB.prompt + '</div>';
+                content += '<div class="image-grid">';
+                test.candidateB.images.forEach((url, i) => {
+                    content += `<div class="image-item"><img src="${url}" alt="Picture ${i+1}"><p>Picture ${i+1}</p></div>`;
+                });
+                content += '</div>';
+                content += '<div class="question">Follow-up for Candidate A: ' + test.candidateB.followUp + '</div>';
+            } 
+            else if (currentPart === 3) {
+    const test = data.part3[Math.floor(Math.random() * data.part3.length)];
+    content = '<h2>Part 3 - ' + test.topic + '</h2>';
+    content += '<div class="prompt">Now, talk to each other about ' + test.prompt + '</div>';
+    content += '<div class="points-list"><strong>Points to discuss:</strong><ul>';
+    test.points.forEach(point => {
+        content += `<li>• ${point}</li>`;
+    });
+    content += '</ul></div>';
+    content += '<div class="question"><strong>Decision:</strong> Now you have about a minute to decide ' + test.decision + '</div>';
+}
+
+            else if (currentPart === 4) {
+                const test = data.part4[Math.floor(Math.random() * data.part4.length)];
+                content = '<h2>Part 4</h2>';
+                test.questions.forEach(q => {
+                    content += `<div class="question">• ${q}</div>`;
+                });
+            }
+            
+            resultDiv.innerHTML = content;
+            resultDiv.classList.add('show');
+        });
+    </script>
+</body>
+</html>
