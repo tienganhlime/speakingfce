@@ -190,7 +190,8 @@
             border: none;
             border-top: 2px solid #e3e9f4;
         }
-.admin-toggle {
+
+        .admin-toggle {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -288,14 +289,6 @@
             font-size: 1em;
         }
         
-        .preview-img {
-            max-width: 100%;
-            max-height: 150px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 2px solid #4e73df;
-        }
-        
         .save-btn, .upload-btn {
             padding: 10px 20px;
             background: #28a745;
@@ -315,29 +308,87 @@
             opacity: 0.9;
         }
         
-        #uploadStatus {
+        .status {
+            padding: 10px;
+            margin-top: 10px;
             border-radius: 6px;
             font-weight: 600;
+            display: none;
         }
-        
-        #uploadStatus.success {
+
+        .status.success {
             background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        
-        #uploadStatus.error {
+
+        .status.error {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
+        .paste-area {
+            width: 100%;
+            min-height: 200px;
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .paste-area:hover {
+            border-color: #764ba2;
+            background: #f8f9ff;
+        }
+        
+        .paste-area.has-image {
+            border-color: #28a745;
+        }
+        
+        .paste-placeholder {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            padding: 20px;
+        }
+        
+        .paste-area img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+        }
+        
+        .question-display {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .question-display h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .question-display p {
+            margin: 5px 0;
+            color: #333;
+        }
     </style>
-<!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-</head>
 <body>
+    <button class="admin-toggle" onclick="toggleAdmin()">🔧 Admin</button>
+
     <div class="container">
         <div class="header">
             <h1>FCE Speaking Test Random Generator</h1>
@@ -358,27 +409,25 @@
         </div>
     </div>
 
-<button class="admin-toggle" onclick="toggleAdmin()">🔧 Admin</button>
-    
     <div class="admin-panel" id="adminPanel">
         <div class="admin-content">
             <div class="admin-header">
-                <h2>Admin Panel - Upload Images</h2>
+                <h2>📤 Admin - Upload Images</h2>
                 <button class="close-btn" onclick="toggleAdmin()">Close</button>
             </div>
             
             <div class="setup-section" id="setupSection">
-                <h3>⚙️ Setup (Chỉ làm 1 lần)</h3>
-                <input type="text" id="imgbbApiKey" placeholder="Paste ImgBB API Key here">
-                <button class="save-btn" onclick="saveImgBBKey()">Save API Key</button>
+                <h3>⚙️ Setup ImgBB API Key</h3>
+                <input type="text" id="imgbbApiKey" placeholder="Paste ImgBB API Key">
+                <button class="save-btn" onclick="saveImgBBKey()">💾 Save API Key</button>
                 <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
-                    Get free API key at: <a href="https://api.imgbb.com/" target="_blank">https://api.imgbb.com/</a>
+                    Get free key: <a href="https://api.imgbb.com/" target="_blank">https://api.imgbb.com/</a>
                 </p>
             </div>
             
             <div class="upload-section">
-                <h3>📤 Upload Images for Part 2</h3>
-                <select id="testSelect">
+                <h3>Select Test:</h3>
+                <select id="testSelect" onchange="updateTestDisplay()">
                     <option value="1">Test 1</option>
                     <option value="2">Test 2</option>
                     <option value="3">Test 3</option>
@@ -405,54 +454,93 @@
                     <option value="24">Test 24</option>
                 </select>
                 
+                <div id="testQuestions" class="question-display" style="margin-top: 20px;">
+                    <h4>📝 Test 1 Questions</h4>
+                    <p><strong>Candidate A: Getting information</strong></p>
+                    <p>Compare the photographs, and say why you think the people are getting information about these things.</p>
+                </div>
+                
+                <h4 style="margin-top: 25px; color: #4e73df;">👤 Candidate A</h4>
+                
                 <div style="margin: 15px 0;">
-                    <strong>Candidate A - Image 1:</strong>
-                    <input type="file" id="imgA1" accept="image/*" onchange="previewImage(this, 'previewA1')">
-                    <img id="previewA1" class="preview-img" style="display:none;">
-                    <button class="upload-btn" onclick="uploadImage('imgA1', 'candidateA', 0)">Upload A1</button>
+                    <strong>Image 1:</strong>
+                    <div class="paste-area" id="pasteAreaA1" onclick="document.getElementById('fileInputA1').click()">
+                        <div class="paste-placeholder">
+                            <p>🖼️ Click to select file</p>
+                            <p>📋 Or press Ctrl+V to paste</p>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInputA1" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'A', 1)">
+                    <button class="upload-btn" id="uploadBtnA1" onclick="uploadToCloud('A', 1)" disabled>⬆️ Upload A1</button>
+                    <div id="statusA1" class="status"></div>
                 </div>
                 
                 <div style="margin: 15px 0;">
-                    <strong>Candidate A - Image 2:</strong>
-                    <input type="file" id="imgA2" accept="image/*" onchange="previewImage(this, 'previewA2')">
-                    <img id="previewA2" class="preview-img" style="display:none;">
-                    <button class="upload-btn" onclick="uploadImage('imgA2', 'candidateA', 1)">Upload A2</button>
+                    <strong>Image 2:</strong>
+                    <div class="paste-area" id="pasteAreaA2" onclick="document.getElementById('fileInputA2').click()">
+                        <div class="paste-placeholder">
+                            <p>🖼️ Click to select file</p>
+                            <p>📋 Or press Ctrl+V to paste</p>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInputA2" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'A', 2)">
+                    <button class="upload-btn" id="uploadBtnA2" onclick="uploadToCloud('A', 2)" disabled>⬆️ Upload A2</button>
+                    <div id="statusA2" class="status"></div>
+                </div>
+                
+                <h4 style="margin-top: 25px; color: #4e73df;">👤 Candidate B</h4>
+                
+                <div style="margin: 15px 0;">
+                    <strong>Image 1:</strong>
+                    <div class="paste-area" id="pasteAreaB1" onclick="document.getElementById('fileInputB1').click()">
+                        <div class="paste-placeholder">
+                            <p>🖼️ Click to select file</p>
+                            <p>📋 Or press Ctrl+V to paste</p>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInputB1" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'B', 1)">
+                    <button class="upload-btn" id="uploadBtnB1" onclick="uploadToCloud('B', 1)" disabled>⬆️ Upload B1</button>
+                    <div id="statusB1" class="status"></div>
                 </div>
                 
                 <div style="margin: 15px 0;">
-                    <strong>Candidate B - Image 1:</strong>
-                    <input type="file" id="imgB1" accept="image/*" onchange="previewImage(this, 'previewB1')">
-                    <img id="previewB1" class="preview-img" style="display:none;">
-                    <button class="upload-btn" onclick="uploadImage('imgB1', 'candidateB', 0)">Upload B1</button>
+                    <strong>Image 2:</strong>
+                    <div class="paste-area" id="pasteAreaB2" onclick="document.getElementById('fileInputB2').click()">
+                        <div class="paste-placeholder">
+                            <p>🖼️ Click to select file</p>
+                            <p>📋 Or press Ctrl+V to paste</p>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInputB2" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'B', 2)">
+                    <button class="upload-btn" id="uploadBtnB2" onclick="uploadToCloud('B', 2)" disabled>⬆️ Upload B2</button>
+                    <div id="statusB2" class="status"></div>
                 </div>
-                
-                <div style="margin: 15px 0;">
-                    <strong>Candidate B - Image 2:</strong>
-                    <input type="file" id="imgB2" accept="image/*" onchange="previewImage(this, 'previewB2')">
-                    <img id="previewB2" class="preview-img" style="display:none;">
-                    <button class="upload-btn" onclick="uploadImage('imgB2', 'candidateB', 1)">Upload B2</button>
-                </div>
-                
-                <div id="uploadStatus" style="margin-top: 15px; padding: 10px; display: none;"></div>
             </div>
         </div>
     </div>
+
     <script>
-  const firebaseConfig = {
-  apiKey: "AIzaSyCJhFMf6gfIhZ15rDz2DKXwRF3iInYT-Xg",
-  authDomain: "fce-speaking.firebaseapp.com",
-  projectId: "fce-speaking",
-  storageBucket: "fce-speaking.firebasestorage.app",
-  messagingSenderId: "389059425820",
-  appId: "1:389059425820:web:246448eda921933437d1d9",
-  measurementId: "G-93JJ9RJERJ"
-};
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJhFMf6gfIhZ15rDz2DKXwRF3iInYT-Xg",
+            authDomain: "fce-speaking.firebaseapp.com",
+            projectId: "fce-speaking",
+            storageBucket: "fce-speaking.firebasestorage.app",
+            messagingSenderId: "389059425820",
+            appId: "1:389059425820:web:246448eda921933437d1d9"
+        };
         
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        // ✅ FIXED: Khai báo dữ liệu TRƯỚC khi sử dụng
-        const part1Data = [
+
+        // Global Variables
+        let currentPart = 1;
+        let part2Data = [];
+        let imageFiles = {};
+        let lastClickedArea = null;
+
+        // Part 1 Data
+         const part1Data = [
             {
                 categories: [
                     {
@@ -520,7 +608,7 @@
             }
         ];
 
-        const part2Data = [
+ part2Data = [
   // Test 1
   {
     test: 1,
@@ -1636,37 +1724,56 @@ const part4Data = [
 ];
 
 
-
-        // ✅ FIXED: Gán dữ liệu SAU khi đã khai báo
         const data = {
             part1: part1Data,
             part2: part2Data,
             part3: part3Data,
             part4: part4Data
         };
- async function loadPart2Data() {
-            try {
-                const snapshot = await db.collection('part2Tests').orderBy('test').get();
-                part2Data = [];
-                snapshot.forEach(doc => {
-                    part2Data.push(doc.data());
-                });
-                data.part2 = part2Data;
-                console.log('Loaded', part2Data.length, 'tests from Firebase');
-            } catch (error) {
-                console.error('Error loading data:', error);
+
+        // Test Questions for Display
+        const testQuestions = {
+            1: {
+                candidateA: {
+                    topic: "Getting information",
+                    prompt: "Compare the photographs, and say why you think the people are getting information",
+                    followUp: "Do you enjoy travelling by plane?"
+                },
+                candidateB: {
+                    topic: "Walking",
+                    prompt: "Compare the photographs, and say why people decided to go walking",
+                    followUp: "Which place would you prefer to walk in?"
+                }
             }
-        }
+        };
 
-        // Load data khi trang load
-        loadPart2Data();
+        // Load Part 2 Data from Firebase
+        async function loadPart2Data() {
+    try {
+        const snapshot = await db.collection('part2Tests').orderBy('test').get();
+        const firebaseData = [];
+        snapshot.forEach(doc => {
+            firebaseData.push(doc.data());
+        });
+        
+        // MIX: Ưu tiên Firebase, fallback về default data
+        part2Data = part2Data.map(defaultTest => {
+            const fbTest = firebaseData.find(t => t.test === defaultTest.test);
+            return fbTest || defaultTest;
+        });
+        
+        data.part2 = part2Data;
+        console.log('✅ Loaded', part2Data.length, 'tests (mixed Firebase + defaults)');
+    } catch (error) {
+        console.error('❌ Error loading data:', error);
+    }
+}
 
-        // ========== ADMIN FUNCTIONS ==========
+        // Admin Functions
         function toggleAdmin() {
             const panel = document.getElementById('adminPanel');
             panel.classList.toggle('show');
             
-            // Check if ImgBB key exists
             const savedKey = localStorage.getItem('imgbbApiKey');
             if (savedKey) {
                 document.getElementById('setupSection').style.display = 'none';
@@ -1684,37 +1791,96 @@ const part4Data = [
             }
         }
 
-        function previewImage(input, previewId) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById(previewId);
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+        function updateTestDisplay() {
+    const testNum = parseInt(document.getElementById('testSelect').value);
+    const test = part2Data.find(t => t.test === testNum);
+    
+    if (!test) {
+        document.getElementById('testQuestions').innerHTML = `
+            <h4>📝 Test ${testNum} Questions</h4>
+            <p style="color: #dc3545;">No data available for this test.</p>
+        `;
+        attachPasteAreaEvents();
+        return;
+    }
+            const html = `
+                <h4>📝 Test ${testNum} Questions</h4>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p style="font-size: 1.1em; color: #667eea;"><strong>👤 Candidate A: ${test.candidateA.topic}</strong></p>
+                    <p style="margin: 8px 0;">${test.candidateA.prompt}</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <p style="font-size: 1.1em; color: #667eea;"><strong>👤 Candidate B: ${test.candidateB.topic}</strong></p>
+                    <p style="margin: 8px 0;">${test.candidateB.prompt}</p>
+                </div>
+            `;
+            document.getElementById('testQuestions').innerHTML = html;
+            attachPasteAreaEvents();
         }
 
-        async function uploadImage(inputId, candidate, imageIndex) {
+        function handleFileSelect(input, candidate, imageNum) {
+    const file = input.files[0];
+    console.log('📁 File selected:', file ? file.name : 'none');
+    if (file) {
+        const areaId = `pasteArea${candidate}${imageNum}`;
+        console.log('🎯 Target area:', areaId);
+        displayPastedImage(file, areaId);
+    }
+}
+
+        function displayPastedImage(file, areaId) {
+    const area = document.getElementById(areaId);
+    if (!area) {
+        console.error('❌ Area not found:', areaId);
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        area.innerHTML = `<img src="${e.target.result}" alt="Pasted image">`;
+        area.classList.add('has-image');
+        
+        // SỬA CÁCH LẤY CANDIDATE VÀ IMAGE NUM
+        const match = areaId.match(/pasteArea([AB])([12])/);
+        if (!match) {
+            console.error('❌ Invalid area ID:', areaId);
+            return;
+        }
+        
+        const candidate = match[1]; // 'A' hoặc 'B'
+        const imageNum = match[2];  // '1' hoặc '2'
+        const key = `${candidate}${imageNum}`;
+        
+        imageFiles[key] = file;
+        console.log('✅ Image saved:', key, file.name);
+                
+                const btn = document.getElementById(`uploadBtn${candidate}${imageNum}`);
+                if (btn) btn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadToCloud(candidate, imageNum) {
+    console.log('🔍 Upload clicked:', candidate, imageNum); // THÊM DÒNG NÀY
+    console.log('📦 Image files:', imageFiles); // THÊM DÒNG NÀY
             const apiKey = localStorage.getItem('imgbbApiKey');
             if (!apiKey) {
-                showStatus('❌ Please save ImgBB API Key first!', 'error');
+                showStatus(`status${candidate}${imageNum}`, '❌ Please save ImgBB API Key first!', 'error');
                 return;
             }
 
-            const fileInput = document.getElementById(inputId);
-            const file = fileInput.files[0];
+            const file = imageFiles[`${candidate}${imageNum}`];
             if (!file) {
-                showStatus('❌ Please select an image first!', 'error');
+                showStatus(`status${candidate}${imageNum}`, '❌ No image selected!', 'error');
                 return;
             }
 
-            const testNumber = parseInt(document.getElementById('testSelect').value);
-            showStatus('⏳ Uploading to ImgBB...', 'success');
+            const testNum = document.getElementById('testSelect').value;
+            const btn = document.getElementById(`uploadBtn${candidate}${imageNum}`);
+            btn.disabled = true;
+            btn.textContent = '⏳ Uploading...';
 
             try {
-                // Upload to ImgBB
                 const formData = new FormData();
                 formData.append('image', file);
                 
@@ -1727,52 +1893,84 @@ const part4Data = [
                 
                 if (result.success) {
                     const imageUrl = result.data.url;
-                    showStatus('✅ Image uploaded! Saving to Firebase...', 'success');
+                    const candidateKey = `candidate${candidate}`;
+                    const imageIndex = parseInt(imageNum) - 1;
                     
-                    // Save to Firebase
-                    await saveImageToFirebase(testNumber, candidate, imageIndex, imageUrl);
+                    const docRef = db.collection('part2Tests').doc(`test${testNum}`);
+                    const doc = await docRef.get();
+                    let testData;
+if (doc.exists) {
+    testData = doc.data();
+} else {
+    // LẤY DATA TỪ part2Data ĐÃ CÓ SẴN
+    const defaultTest = part2Data.find(t => t.test === parseInt(testNum));
+    
+    if (defaultTest) {
+        testData = {
+            test: parseInt(testNum),
+            candidateA: {
+                topic: defaultTest.candidateA.topic,
+                prompt: defaultTest.candidateA.prompt,
+                images: ["", ""],
+                followUp: defaultTest.candidateA.followUp
+            },
+            candidateB: {
+                topic: defaultTest.candidateB.topic,
+                prompt: defaultTest.candidateB.prompt,
+                images: ["", ""],
+                followUp: defaultTest.candidateB.followUp
+            }
+        };
+    } else {
+        testData = {
+            test: parseInt(testNum),
+            candidateA: { topic: "", prompt: "", images: ["", ""], followUp: "" },
+            candidateB: { topic: "", prompt: "", images: ["", ""], followUp: "" }
+        };
+    }
+}
+                                        
+                    // NẾU CHƯA CÓ candidateKey, LẤY TỪ part2Data
+if (!testData[candidateKey]) {
+    const defaultTest = part2Data.find(t => t.test === parseInt(testNum));
+    if (defaultTest && defaultTest[candidateKey]) {
+        testData[candidateKey] = {
+            topic: defaultTest[candidateKey].topic,
+            prompt: defaultTest[candidateKey].prompt,
+            images: ["", ""],
+            followUp: defaultTest[candidateKey].followUp
+        };
+    } else {
+        testData[candidateKey] = { topic: "", prompt: "", images: ["", ""], followUp: "" };
+    }
+}
+                   
+                    if (!testData[candidateKey].images) {
+                        testData[candidateKey].images = ["", ""];
+                    }
+
+                    testData[candidateKey].images[imageIndex] = imageUrl;
+                    await docRef.set(testData, { merge: true });
                     
+                    showStatus(`status${candidate}${imageNum}`, '✅ Upload successful!', 'success');
+                    btn.textContent = `✓ Uploaded`;
+                    
+                    await loadPart2Data();
                 } else {
-                    showStatus('❌ ImgBB upload failed: ' + result.error.message, 'error');
+                    throw new Error(result.error.message);
                 }
             } catch (error) {
-                showStatus('❌ Error: ' + error.message, 'error');
+                showStatus(`status${candidate}${imageNum}`, '❌ Error: ' + error.message, 'error');
+                btn.disabled = false;
+                btn.textContent = `⬆️ Upload ${candidate}${imageNum}`;
             }
         }
 
-        async function saveImageToFirebase(testNumber, candidate, imageIndex, imageUrl) {
-            try {
-                const docRef = db.collection('part2Tests').doc(`test${testNumber}`);
-                const doc = await docRef.get();
-                
-                let testData;
-                if (doc.exists) {
-                    testData = doc.data();
-                } else {
-                    testData = {
-                        test: testNumber,
-                        candidateA: { topic: "", prompt: "", images: ["", ""], followUp: "" },
-                        candidateB: { topic: "", prompt: "", images: ["", ""], followUp: "" }
-                    };
-                }
-                
-                testData[candidate].images[imageIndex] = imageUrl;
-                
-                await docRef.set(testData);
-                showStatus('✅ Image saved to Firebase successfully!', 'success');
-                
-                // Reload data
-                await loadPart2Data();
-                
-            } catch (error) {
-                showStatus('❌ Firebase error: ' + error.message, 'error');
-            }
-        }
-
-        function showStatus(message, type) {
-            const status = document.getElementById('uploadStatus');
+        function showStatus(id, message, type) {
+            const status = document.getElementById(id);
+            if (!status) return;
             status.textContent = message;
-            status.className = type;
+            status.className = 'status ' + type;
             status.style.display = 'block';
             
             if (type === 'success') {
@@ -1782,8 +1980,54 @@ const part4Data = [
             }
         }
 
-               let currentPart = 1;
+        function attachPasteAreaEvents() {
+            document.querySelectorAll('.paste-area').forEach(area => {
+                area.addEventListener('click', function() {
+                    lastClickedArea = this.id;
+                    document.querySelectorAll('.paste-area').forEach(a => a.style.boxShadow = '');
+                    this.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.3)';
+                });
+                
+                area.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#28a745';
+                    lastClickedArea = this.id;
+                });
+                
+                area.addEventListener('dragleave', function() {
+                    this.style.borderColor = '#667eea';
+                });
+                
+                area.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#667eea';
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        displayPastedImage(file, this.id);
+                    }
+                });
+            });
+        }
 
+        // Paste Event
+        document.addEventListener('paste', function(e) {
+            if (!document.getElementById('adminPanel').classList.contains('show')) return;
+            
+            const items = e.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    if (lastClickedArea) {
+                        displayPastedImage(blob, lastClickedArea);
+                    } else {
+                        alert('📌 Please click on an image area first!');
+                    }
+                    break;
+                }
+            }
+        });
+
+        // Part Selection
         const partButtons = document.querySelectorAll('.part-btn');
         partButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -1795,6 +2039,7 @@ const part4Data = [
             });
         });
 
+        // Random Button
         document.querySelector('.random-btn').addEventListener('click', () => {
             const resultDiv = document.querySelector('.result');
             let content = '';
@@ -1817,7 +2062,8 @@ const part4Data = [
                 } else {
                     const test = data.part2[Math.floor(Math.random() * data.part2.length)];
                     content = '<h2>Part 2</h2>';
-                    content += '<div class="prompt"><strong>Candidate A:</strong> ' + test.candidateA.prompt + '</div>';
+                     content += `<h3 style="color: #4e73df; margin-top: 20px;">Candidate A: ${test.candidateA.topic}</h3>`;
+        content += '<div class="prompt">' + test.candidateA.prompt + '</div>';
                     content += '<div class="image-grid">';
                     test.candidateA.images.forEach((url, i) => {
                         if (url) {
@@ -1827,7 +2073,8 @@ const part4Data = [
                     content += '</div>';
                     content += '<div class="question">Follow-up for Candidate B: ' + test.candidateA.followUp + '</div>';
                     content += '<hr>';
-                    content += '<div class="prompt"><strong>Candidate B:</strong> ' + test.candidateB.prompt + '</div>';
+content += `<h3 style="color: #4e73df; margin-top: 20px;">Candidate B: ${test.candidateB.topic}</h3>`;
+content += '<div class="prompt">' + test.candidateB.prompt + '</div>';
                     content += '<div class="image-grid">';
                     test.candidateB.images.forEach((url, i) => {
                         if (url) {
@@ -1859,6 +2106,13 @@ const part4Data = [
             
             resultDiv.innerHTML = content;
             resultDiv.classList.add('show');
+        });
+
+        // Initialize on Load
+        window.addEventListener('load', () => {
+            loadPart2Data();
+            updateTestDisplay();
+            attachPasteAreaEvents();
         });
     </script>
 </body>
