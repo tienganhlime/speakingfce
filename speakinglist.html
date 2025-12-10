@@ -190,7 +190,152 @@
             border: none;
             border-top: 2px solid #e3e9f4;
         }
+.admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #4e73df;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+        
+        .admin-panel.show {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        
+        .admin-content {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e3e9f4;
+        }
+        
+        .close-btn {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .setup-section {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 2px solid #ffc107;
+        }
+        
+        .setup-section h3 {
+            margin-bottom: 15px;
+            color: #856404;
+        }
+        
+        .upload-section {
+            background: #f8f9fc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e3e9f4;
+        }
+        
+        .upload-section h3 {
+            margin-bottom: 15px;
+            color: #4e73df;
+        }
+        
+        .upload-section select,
+        .setup-section input,
+        .upload-section input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #e3e9f4;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .preview-img {
+            max-width: 100%;
+            max-height: 150px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #4e73df;
+        }
+        
+        .save-btn, .upload-btn {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .upload-btn {
+            background: #4e73df;
+        }
+        
+        .save-btn:hover, .upload-btn:hover {
+            opacity: 0.9;
+        }
+        
+        #uploadStatus {
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        #uploadStatus.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        #uploadStatus.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
+<!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
 </head>
 <body>
     <div class="container">
@@ -213,7 +358,99 @@
         </div>
     </div>
 
+<button class="admin-toggle" onclick="toggleAdmin()">🔧 Admin</button>
+    
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-content">
+            <div class="admin-header">
+                <h2>Admin Panel - Upload Images</h2>
+                <button class="close-btn" onclick="toggleAdmin()">Close</button>
+            </div>
+            
+            <div class="setup-section" id="setupSection">
+                <h3>⚙️ Setup (Chỉ làm 1 lần)</h3>
+                <input type="text" id="imgbbApiKey" placeholder="Paste ImgBB API Key here">
+                <button class="save-btn" onclick="saveImgBBKey()">Save API Key</button>
+                <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                    Get free API key at: <a href="https://api.imgbb.com/" target="_blank">https://api.imgbb.com/</a>
+                </p>
+            </div>
+            
+            <div class="upload-section">
+                <h3>📤 Upload Images for Part 2</h3>
+                <select id="testSelect">
+                    <option value="1">Test 1</option>
+                    <option value="2">Test 2</option>
+                    <option value="3">Test 3</option>
+                    <option value="4">Test 4</option>
+                    <option value="5">Test 5</option>
+                    <option value="6">Test 6</option>
+                    <option value="7">Test 7</option>
+                    <option value="8">Test 8</option>
+                    <option value="9">Test 9</option>
+                    <option value="10">Test 10</option>
+                    <option value="11">Test 11</option>
+                    <option value="12">Test 12</option>
+                    <option value="13">Test 13</option>
+                    <option value="14">Test 14</option>
+                    <option value="15">Test 15</option>
+                    <option value="16">Test 16</option>
+                    <option value="17">Test 17</option>
+                    <option value="18">Test 18</option>
+                    <option value="19">Test 19</option>
+                    <option value="20">Test 20</option>
+                    <option value="21">Test 21</option>
+                    <option value="22">Test 22</option>
+                    <option value="23">Test 23</option>
+                    <option value="24">Test 24</option>
+                </select>
+                
+                <div style="margin: 15px 0;">
+                    <strong>Candidate A - Image 1:</strong>
+                    <input type="file" id="imgA1" accept="image/*" onchange="previewImage(this, 'previewA1')">
+                    <img id="previewA1" class="preview-img" style="display:none;">
+                    <button class="upload-btn" onclick="uploadImage('imgA1', 'candidateA', 0)">Upload A1</button>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong>Candidate A - Image 2:</strong>
+                    <input type="file" id="imgA2" accept="image/*" onchange="previewImage(this, 'previewA2')">
+                    <img id="previewA2" class="preview-img" style="display:none;">
+                    <button class="upload-btn" onclick="uploadImage('imgA2', 'candidateA', 1)">Upload A2</button>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong>Candidate B - Image 1:</strong>
+                    <input type="file" id="imgB1" accept="image/*" onchange="previewImage(this, 'previewB1')">
+                    <img id="previewB1" class="preview-img" style="display:none;">
+                    <button class="upload-btn" onclick="uploadImage('imgB1', 'candidateB', 0)">Upload B1</button>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong>Candidate B - Image 2:</strong>
+                    <input type="file" id="imgB2" accept="image/*" onchange="previewImage(this, 'previewB2')">
+                    <img id="previewB2" class="preview-img" style="display:none;">
+                    <button class="upload-btn" onclick="uploadImage('imgB2', 'candidateB', 1)">Upload B2</button>
+                </div>
+                
+                <div id="uploadStatus" style="margin-top: 15px; padding: 10px; display: none;"></div>
+            </div>
+        </div>
+    </div>
     <script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyCJhFMf6gfIhZ15rDz2DKXwRF3iInYT-Xg",
+  authDomain: "fce-speaking.firebaseapp.com",
+  projectId: "fce-speaking",
+  storageBucket: "fce-speaking.firebasestorage.app",
+  messagingSenderId: "389059425820",
+  appId: "1:389059425820:web:246448eda921933437d1d9",
+  measurementId: "G-93JJ9RJERJ"
+};
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
         // ✅ FIXED: Khai báo dữ liệu TRƯỚC khi sử dụng
         const part1Data = [
             {
@@ -1407,10 +1644,146 @@ const part4Data = [
             part3: part3Data,
             part4: part4Data
         };
+ async function loadPart2Data() {
+            try {
+                const snapshot = await db.collection('part2Tests').orderBy('test').get();
+                part2Data = [];
+                snapshot.forEach(doc => {
+                    part2Data.push(doc.data());
+                });
+                data.part2 = part2Data;
+                console.log('Loaded', part2Data.length, 'tests from Firebase');
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
 
-        let currentPart = 1;
+        // Load data khi trang load
+        loadPart2Data();
 
-        // Event listeners cho nút chọn part
+        // ========== ADMIN FUNCTIONS ==========
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('show');
+            
+            // Check if ImgBB key exists
+            const savedKey = localStorage.getItem('imgbbApiKey');
+            if (savedKey) {
+                document.getElementById('setupSection').style.display = 'none';
+            }
+        }
+
+        function saveImgBBKey() {
+            const key = document.getElementById('imgbbApiKey').value.trim();
+            if (key) {
+                localStorage.setItem('imgbbApiKey', key);
+                alert('✅ API Key saved!');
+                document.getElementById('setupSection').style.display = 'none';
+            } else {
+                alert('❌ Please enter a valid API key');
+            }
+        }
+
+        function previewImage(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById(previewId);
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function uploadImage(inputId, candidate, imageIndex) {
+            const apiKey = localStorage.getItem('imgbbApiKey');
+            if (!apiKey) {
+                showStatus('❌ Please save ImgBB API Key first!', 'error');
+                return;
+            }
+
+            const fileInput = document.getElementById(inputId);
+            const file = fileInput.files[0];
+            if (!file) {
+                showStatus('❌ Please select an image first!', 'error');
+                return;
+            }
+
+            const testNumber = parseInt(document.getElementById('testSelect').value);
+            showStatus('⏳ Uploading to ImgBB...', 'success');
+
+            try {
+                // Upload to ImgBB
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const imageUrl = result.data.url;
+                    showStatus('✅ Image uploaded! Saving to Firebase...', 'success');
+                    
+                    // Save to Firebase
+                    await saveImageToFirebase(testNumber, candidate, imageIndex, imageUrl);
+                    
+                } else {
+                    showStatus('❌ ImgBB upload failed: ' + result.error.message, 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function saveImageToFirebase(testNumber, candidate, imageIndex, imageUrl) {
+            try {
+                const docRef = db.collection('part2Tests').doc(`test${testNumber}`);
+                const doc = await docRef.get();
+                
+                let testData;
+                if (doc.exists) {
+                    testData = doc.data();
+                } else {
+                    testData = {
+                        test: testNumber,
+                        candidateA: { topic: "", prompt: "", images: ["", ""], followUp: "" },
+                        candidateB: { topic: "", prompt: "", images: ["", ""], followUp: "" }
+                    };
+                }
+                
+                testData[candidate].images[imageIndex] = imageUrl;
+                
+                await docRef.set(testData);
+                showStatus('✅ Image saved to Firebase successfully!', 'success');
+                
+                // Reload data
+                await loadPart2Data();
+                
+            } catch (error) {
+                showStatus('❌ Firebase error: ' + error.message, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('uploadStatus');
+            status.textContent = message;
+            status.className = type;
+            status.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+               let currentPart = 1;
+
         const partButtons = document.querySelectorAll('.part-btn');
         partButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -1422,7 +1795,6 @@ const part4Data = [
             });
         });
 
-        // ✅ FIXED: Sửa lại logic random cho từng part
         document.querySelector('.random-btn').addEventListener('click', () => {
             const resultDiv = document.querySelector('.result');
             let content = '';
@@ -1440,36 +1812,43 @@ const part4Data = [
                 });
             } 
             else if (currentPart === 2) {
-                const test = data.part2[Math.floor(Math.random() * data.part2.length)];
-                content = '<h2>Part 2</h2>';
-                content += '<div class="prompt"><strong>Candidate A:</strong> ' + test.candidateA.prompt + '</div>';
-                content += '<div class="image-grid">';
-                test.candidateA.images.forEach((url, i) => {
-                    content += `<div class="image-item"><img src="${url}" alt="Picture ${i+1}"><p>Picture ${i+1}</p></div>`;
-                });
-                content += '</div>';
-                content += '<div class="question">Follow-up for Candidate B: ' + test.candidateA.followUp + '</div>';
-                content += '<hr>';
-                content += '<div class="prompt"><strong>Candidate B:</strong> ' + test.candidateB.prompt + '</div>';
-                content += '<div class="image-grid">';
-                test.candidateB.images.forEach((url, i) => {
-                    content += `<div class="image-item"><img src="${url}" alt="Picture ${i+1}"><p>Picture ${i+1}</p></div>`;
-                });
-                content += '</div>';
-                content += '<div class="question">Follow-up for Candidate A: ' + test.candidateB.followUp + '</div>';
+                if (data.part2.length === 0) {
+                    content = '<h2>Part 2</h2><p>No tests available. Please upload images in Admin Panel.</p>';
+                } else {
+                    const test = data.part2[Math.floor(Math.random() * data.part2.length)];
+                    content = '<h2>Part 2</h2>';
+                    content += '<div class="prompt"><strong>Candidate A:</strong> ' + test.candidateA.prompt + '</div>';
+                    content += '<div class="image-grid">';
+                    test.candidateA.images.forEach((url, i) => {
+                        if (url) {
+                            content += `<div class="image-item"><img src="${url}" alt="Picture ${i+1}"><p>Picture ${i+1}</p></div>`;
+                        }
+                    });
+                    content += '</div>';
+                    content += '<div class="question">Follow-up for Candidate B: ' + test.candidateA.followUp + '</div>';
+                    content += '<hr>';
+                    content += '<div class="prompt"><strong>Candidate B:</strong> ' + test.candidateB.prompt + '</div>';
+                    content += '<div class="image-grid">';
+                    test.candidateB.images.forEach((url, i) => {
+                        if (url) {
+                            content += `<div class="image-item"><img src="${url}" alt="Picture ${i+1}"><p>Picture ${i+1}</p></div>`;
+                        }
+                    });
+                    content += '</div>';
+                    content += '<div class="question">Follow-up for Candidate A: ' + test.candidateB.followUp + '</div>';
+                }
             } 
             else if (currentPart === 3) {
-    const test = data.part3[Math.floor(Math.random() * data.part3.length)];
-    content = '<h2>Part 3 - ' + test.topic + '</h2>';
-    content += '<div class="prompt">Now, talk to each other about ' + test.prompt + '</div>';
-    content += '<div class="points-list"><strong>Points to discuss:</strong><ul>';
-    test.points.forEach(point => {
-        content += `<li>• ${point}</li>`;
-    });
-    content += '</ul></div>';
-    content += '<div class="question"><strong>Decision:</strong> Now you have about a minute to decide ' + test.decision + '</div>';
-}
-
+                const test = data.part3[Math.floor(Math.random() * data.part3.length)];
+                content = '<h2>Part 3 - ' + test.topic + '</h2>';
+                content += '<div class="prompt">Now, talk to each other about ' + test.prompt + '</div>';
+                content += '<div class="points-list"><strong>Points to discuss:</strong><ul>';
+                test.points.forEach(point => {
+                    content += `<li>• ${point}</li>`;
+                });
+                content += '</ul></div>';
+                content += '<div class="question"><strong>Decision:</strong> Now you have about a minute to decide ' + test.decision + '</div>';
+            } 
             else if (currentPart === 4) {
                 const test = data.part4[Math.floor(Math.random() * data.part4.length)];
                 content = '<h2>Part 4</h2>';
